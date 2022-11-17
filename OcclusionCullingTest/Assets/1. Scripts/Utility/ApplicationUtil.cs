@@ -8,10 +8,10 @@ namespace Utility
 		{
 #if UNITY_EDITOR
 			UnityEditor.EditorApplication.ExitPlaymode();
-			return;
-#endif
+#else
 			
 			UnityEngine.Application.Quit();
+#endif
 		}
 	}
 }
