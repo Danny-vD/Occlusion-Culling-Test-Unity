@@ -25,3 +25,6 @@
 .externalNativeBuild
 .cxx
 *.csproj
+
+# The .raw files are way over 100 MB
+OcclusionCullingTest/Profiles/
