@@ -28,3 +28,7 @@
 
 # The .raw files are way over 100 MB
 OcclusionCullingTest/Profiles/
+
+# Folders to build into seperated by occlussion culling ON/OFF
+BuildON/
+BuildOFF/

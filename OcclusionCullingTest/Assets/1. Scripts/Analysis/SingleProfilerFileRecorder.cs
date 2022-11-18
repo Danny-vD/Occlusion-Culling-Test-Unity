@@ -1,6 +1,6 @@
 ﻿namespace Analysis
 {
-	public class SingleProfilerFileRecorder : ProfilerUtil
+	public class SingleProfilerFileRecorder : ProfilerFileRecorder
 	{
 		// Animation system does not support overloaded functions
 		public void StartRecordingData()
