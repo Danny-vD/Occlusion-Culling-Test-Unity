@@ -29,49 +29,40 @@ namespace Utility
 
 		private void CaptureScreenshot()
 		{
-			ScreenCapture.CaptureScreenshot(GetFileName(), superSize);
+			ScreenCapture.CaptureScreenshot(GetScreenshotPath(), superSize);
 		}
 
-		private string GetFileName()
+		private string GetScreenshotPath()
 		{
+			string screenshotPath = pathName;
+			screenshotPath = screenshotPath.Replace('\\', '/');
+			
+			int extensionIndex = screenshotPath.LastIndexOf('.');
+			string extension = screenshotPath.Substring(extensionIndex);
+			screenshotPath = screenshotPath.Remove(extensionIndex);
+		
+			int fileNameIndex = screenshotPath.LastIndexOf('/');
+			string fileName = screenshotPath.Substring(fileNameIndex);
+
 #if UNITY_EDITOR
-			string fileName = pathName;
-
-			fileName = fileName.Replace('\\', '/');
+			screenshotPath = GetFolderPath(); // Always use a predefined folder path for editor screenshots
 			
-			int extensionIndex = fileName.LastIndexOf('.');
-			string extension = fileName.Substring(extensionIndex);
-			fileName = fileName.Remove(extensionIndex);
-			
-			int fileNameIndex = fileName.LastIndexOf('/');
-			fileName = fileName.Substring(fileNameIndex);
-			
-			string folderPath = GetFolderPath();
-			int fileCount = Directory.GetFiles(folderPath).Length;
-			
-			folderPath += fileName;
-			folderPath += fileCount;
-			folderPath += extension;
-
-			return folderPath;
 #else
-			string fileName = pathName;
-
-			fileName = fileName.Replace('\\', '/');
-
-			int extensionIndex = fileName.LastIndexOf('.');
-			string extension = fileName.Substring(extensionIndex);
-			fileName = fileName.Remove(extensionIndex);
-
-			int fileNameIndex = fileName.LastIndexOf('/');
-			string folderPath = fileName.Remove(fileNameIndex);
-			int fileCount = Directory.GetFiles(folderPath).Length;
-
-			fileName += fileCount;
-			fileName += extension;
-
-			return fileName;
+			screenshotPath = screenshotPath.Remove(fileNameIndex);
 #endif
+
+			if (!Directory.Exists(screenshotPath))
+			{
+				Directory.CreateDirectory(screenshotPath);
+			}
+			
+			int fileCount = Directory.GetFiles(screenshotPath).Length;
+			
+			screenshotPath += fileName;
+			screenshotPath += fileCount + 1;
+			screenshotPath += extension;
+
+			return screenshotPath;
 		}
 
 #if UNITY_EDITOR
@@ -132,6 +123,7 @@ namespace Utility
 
 			if (screenshot == null)
 			{
+				Debug.LogError("No screenshot taker is found in the scene\nThis component is necessary to call the right functions!");
 				return;
 			}
 
@@ -141,14 +133,14 @@ namespace Utility
 		[UnityEditor.MenuItem("Screenshots/Open Screenshot folder #F12")]
 		private static void OpenScreenshotFolder()
 		{
-			ScreenshotTaker screenshotTaker = FindObjectOfType<ScreenshotTaker>(true);
+			string screenshotPath = GetFolderPath();
 
-			if (screenshotTaker == null)
+			if (!Directory.Exists(screenshotPath))
 			{
-				return;
+				Directory.CreateDirectory(screenshotPath);
 			}
 
-			System.Diagnostics.Process.Start(GetFolderPath());
+			System.Diagnostics.Process.Start(screenshotPath);
 		}
 		
 		private static string GetFolderPath()
